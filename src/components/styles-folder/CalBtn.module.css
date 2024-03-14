@@ -18,3 +18,26 @@
 .button:active {
   transform: scale(0.95);
 }
+
+.button2 {
+  padding: 10px;
+  font-size: 1.2rem;
+  background-color: #1f2937;
+  border: 1px solid #1f2937;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 5px;
+}
+
+.button2:hover {
+  background-color: #374151;
+}
+
+.button2:focus {
+  outline: none;
+}
+
+.button2:active {
+  transform: scale(0.95);
+}
