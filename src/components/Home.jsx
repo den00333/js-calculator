@@ -8,7 +8,9 @@ const Home = () => {
     const [hasDecimal, setHasDecimal] = useState(false);
     const [hasNegative, setNegative] = useState(false);
 
-
+    const [hasSquared, setSquared] = useState(true);
+    const [hasPercentage, setPercentage] = useState(true);
+    const [hasSquareRoot, setSquareRoot] = useState(true);
   const traverseNumUntilYouHitOperation = () =>{
     let numWithoutOperation = '';
     let leftOverNums = '';
@@ -23,7 +25,17 @@ const Home = () => {
         continue;
       }
       if(isNaN(parseInt(result[i]))){
-        localFlag = true;
+        // console.log(result[i]);
+        if(result[i] == '(' || result[i] == ')'){
+          
+          // console.log(result[i] + '()');
+        }else if(result[i] == '-' && result[i-1] == '('){
+          
+          // console.log(result[i] + '(-');
+        }else{
+          // console.log(result[i] + 'nada');
+          localFlag = true;
+        }
       }
       if (localFlag){
         leftOverNums += result[i];
@@ -36,17 +48,22 @@ const Home = () => {
 
   const positiveOrNegative = () => {
     
+    if(isNaN(parseInt(result.slice(-1)))){
+      return;
+    }
+
     let [leftOverNums, numWithoutOperation] = traverseNumUntilYouHitOperation();
     // console.log(eval('(-72)-(-2)'));
-    let reverseNegativeStr = numWithoutOperation.split('').reverse().join('');
+    let reverseNegativeStr = numWithoutOperation.replace(/[()-]/g, '').split('').reverse().join('');
     let negativeReversed = '';
     let reverseLeftOver = '';
     if(hasNegative){
+      
       negativeReversed += reverseNegativeStr;
-      reverseLeftOver = leftOverNums.slice(1).split('').reverse().join('');
+      reverseLeftOver = leftOverNums.split('').reverse().join('');
       setNegative(false);
     }else{
-      negativeReversed = '-' + reverseNegativeStr;
+      negativeReversed = '(-' + reverseNegativeStr + ')';
       reverseLeftOver = leftOverNums.split('').reverse().join('');
       setNegative(true);
     }
@@ -55,18 +72,82 @@ const Home = () => {
     setResult(wholeNewStr);
   }
 
+  const handleSquare = () => {
+    let [reverserdLeftOverNums, reverserdNumWithoutOperation] = traverseNumUntilYouHitOperation();
+    let leftOverNums = reverserdLeftOverNums.split('').reverse().join('');
+    let numWithoutOperation = reverserdNumWithoutOperation.split('').reverse().join('');
+    
+    if(hasSquared){
+      if(leftOverNums == ''){
+        setResult((numWithoutOperation * numWithoutOperation).toString());
+      }else if(numWithoutOperation == ''){
+        setResult((leftOverNums.slice(0, -1) * leftOverNums.slice(0, -1)).toString() + leftOverNums.slice(-1)); // + leftOverNums.slice(-1)
+      }else{
+        setResult(leftOverNums + (numWithoutOperation * numWithoutOperation).toString());
+      }
+      setSquared(false);
+    }else{
+      if(leftOverNums == ''){
+        setResult((Math.sqrt(numWithoutOperation)).toString());
+      }else if(numWithoutOperation == ''){
+        setResult((Math.sqrt(leftOverNums.slice(0, -1))).toString() + leftOverNums.slice(-1));
+      }else{
+        setResult(leftOverNums + (Math.sqrt(numWithoutOperation)).toString());
+      }
+      setSquared(true);
+    }
+  }
+
   const handlePercentage = () => {
  
     let [reverserdLeftOverNums, reverserdNumWithoutOperation] = traverseNumUntilYouHitOperation();
     let leftOverNums = reverserdLeftOverNums.split('').reverse().join('');
     let numWithoutOperation = reverserdNumWithoutOperation.split('').reverse().join('');
-
-    if(leftOverNums == ''){
-      setResult((numWithoutOperation/100).toString());
-    }else if(numWithoutOperation == ''){
-      setResult((leftOverNums.slice(0, -1)/100).toString());
+    
+    if(hasPercentage){
+      if(leftOverNums == ''){
+        setResult((numWithoutOperation/100).toString());
+      }else if(numWithoutOperation == ''){
+        setResult((leftOverNums.slice(0, -1)/100).toString() + leftOverNums.slice(-1));
+      }else{
+        setResult(leftOverNums + (numWithoutOperation/100).toString());
+      }
+      setPercentage(false);
     }else{
-      setResult(leftOverNums + (numWithoutOperation/100).toString());
+      if(leftOverNums == ''){
+        setResult((numWithoutOperation*100).toString());
+      }else if(numWithoutOperation == ''){
+        setResult((leftOverNums.slice(0, -1)*100).toString() + leftOverNums.slice(-1));
+      }else{
+        setResult(leftOverNums + (numWithoutOperation*100).toString());
+      }
+      setPercentage(true);
+    }
+  }
+
+  const handleSqareRoot = () => {
+    let [reverserdLeftOverNums, reverserdNumWithoutOperation] = traverseNumUntilYouHitOperation();
+    let leftOverNums = reverserdLeftOverNums.split('').reverse().join('');
+    let numWithoutOperation = reverserdNumWithoutOperation.split('').reverse().join('');
+
+    if(hasSquareRoot){
+      if(leftOverNums == ''){
+        setResult((Math.sqrt(numWithoutOperation)).toString());
+      }else if(numWithoutOperation == ''){
+        setResult((Math.sqrt(leftOverNums.slice(0, -1))).toString() + leftOverNums.slice(-1));
+      }else{
+        setResult(leftOverNums + (Math.sqrt(numWithoutOperation)).toString());
+      }
+      setSquareRoot(false);
+    }else{
+      if(leftOverNums == ''){
+        setResult((Math.round(numWithoutOperation * numWithoutOperation)).toString());
+      }else if(numWithoutOperation == ''){
+        setResult((Math.round(leftOverNums.slice(0, -1) * leftOverNums.slice(0, -1))).toString() + leftOverNums.slice(-1));
+      }else{
+        setResult(leftOverNums + (Math.round(numWithoutOperation * numWithoutOperation)).toString());
+      }
+      setSquareRoot(true);
     }
   }
 
@@ -182,8 +263,8 @@ const Home = () => {
                 <button className={btnStyles.button2} onClick={clearResult}>C</button>  
                 <button className={btnStyles.button2} onClick={deleteNum}>DEL</button>
 
-                <button className={btnStyles.button2} >x²</button>
-                <button className={btnStyles.button2} >√</button>
+                <button className={btnStyles.button2} onClick={handleSquare}>x²</button>
+                <button className={btnStyles.button2} onClick={handleSqareRoot}>√</button>
                 <button className={btnStyles.button2} onClick={positiveOrNegative}>+/-</button>
                 <button className={btnStyles.button2} onClick={() => handleClick('/')}>÷</button>
 
