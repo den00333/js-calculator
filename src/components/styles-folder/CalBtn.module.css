@@ -5,6 +5,7 @@
   border: 1px solid #ddd;
   cursor: pointer;
   transition: background-color 0.3s;
+  border-radius: 5px;
 }
 
 .button:hover {
@@ -41,3 +42,11 @@
 .button2:active {
   transform: scale(0.95);
 }
+
+@media (max-width: 640px) {
+  .button,
+  .button2 {
+    font-size: .7rem;
+  }
+}
+
