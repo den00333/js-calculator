@@ -11,6 +11,7 @@ const Home = () => {
     const [hasSquared, setSquared] = useState(true);
     const [hasPercentage, setPercentage] = useState(true);
     const [hasSquareRoot, setSquareRoot] = useState(true);
+    
   const traverseNumUntilYouHitOperation = () =>{
     let numWithoutOperation = '';
     let leftOverNums = '';
@@ -48,7 +49,7 @@ const Home = () => {
 
   const positiveOrNegative = () => {
     
-    if(isNaN(parseInt(result.slice(-1)))){
+    if(isNaN(parseInt(result.slice(-1))) && (result.slice(-1) == '-' || result.slice(-1) == '+' || result.slice(-1) == '/' || result.slice(-1) == '*')){
       return;
     }
 
@@ -115,11 +116,11 @@ const Home = () => {
       setPercentage(false);
     }else{
       if(leftOverNums == ''){
-        setResult((numWithoutOperation*100).toString());
+        setResult((Math.round(numWithoutOperation*100)).toString());
       }else if(numWithoutOperation == ''){
-        setResult((leftOverNums.slice(0, -1)*100).toString() + leftOverNums.slice(-1));
+        setResult((Math.round(leftOverNums.slice(0, -1)*100)).toString() + leftOverNums.slice(-1));
       }else{
-        setResult(leftOverNums + (numWithoutOperation*100).toString());
+        setResult(leftOverNums + (Math.round(numWithoutOperation*100)).toString());
       }
       setPercentage(true);
     }
@@ -186,6 +187,9 @@ const Home = () => {
   const handleClearingNum = (value) => {
     if(clearFLag){
       setClearFlag(false);
+      setSquareRoot(true);
+      setSquared(true);
+      setPercentage(true);
       // setResult(result); //commenting this
       try{
         // after calculating it will be deleted if I click a number else if it is operations/symbols 
@@ -225,7 +229,10 @@ const Home = () => {
   const clearResult = () => {
     setResult('0');
     setNegative(false);
-    // setHasDecimal(true);
+    
+    setSquareRoot(true);
+    setSquared(true);
+    setPercentage(true);
   };
 
   const deleteNum = () =>{
@@ -238,11 +245,24 @@ const Home = () => {
     });
   }
 
+  const limitDecimal = (number) => {
+    if (number.toString().includes('.')) {
+      var parts = number.toString().split('.');
+      if (parts[1].length > 10) {
+          console.log(number);
+          return parseFloat(Math.round(number*1e10)/1e10);
+      }
+    }
+    return number;
+  }
+  
   const calculateResult = () => {
     try {
-      let outcome = eval(result).toString();  
-      setResult(outcome);
-      setComputation([...computationList, `${result}=${outcome}`]);
+      console.log('-> ' + result);
+      let outcome = eval(result).toString();
+      let num = limitDecimal(outcome).toString();
+      setResult(num);
+      setComputation([...computationList, `${result}=${num}`]);
       setClearFlag(true);
     } catch (error) {
       setResult('Error');
@@ -253,11 +273,11 @@ const Home = () => {
   let reversedList = [...computationList].reverse();
 
   return (
-    <div className=' flex justify-center'>
+    <div className=' flex flex-col md:justify-center md:flex-row'>
 
-          <div className="bg-green-500 pb-40 pt-20 px-20 rounded shadow-md m-7">
-                <div className="text-2xsl mb-5 h-14 w-64 overflow-y-auto bg-slate-900 text-white flex items-center justify-center">{result}</div>
-                <div className="grid grid-cols-4 gap-2 h-64 w-64">
+          <div className="bg-green-500 pb-16 md:pb-40 pt-20 md:px-20 rounded shadow-md m-7 flex flex-col justify-center items-center">
+                <div className="text-2xsl mb-5 h-14 w-44 md:w-64 overflow-y-auto bg-slate-900 text-white flex items-center justify-center">{result}</div>
+                <div className="grid grid-cols-4 gap-2 h-64 w-44 md:w-64">
                 <button className={btnStyles.button2} onClick={handlePercentage}>%</button>  
                 <button className={btnStyles.button2} onClick={clearResult}>AC</button>
                 <button className={btnStyles.button2} onClick={clearResult}>C</button>  
@@ -286,18 +306,29 @@ const Home = () => {
                 <button className={btnStyles.button} onClick={() => handleClick('00')}>00</button>
                 <button className={btnStyles.button} onClick={() => handleClick('0')}>0</button>
                 <button className={btnStyles.button} onClick={() => handleClick('.')}>.</button>
-                <button onClick={calculateResult} className="text-xl bg-gray-800 text-white rounded-md p-4">=</button>
+                <button onClick={calculateResult} className="text-sm md:text-xl bg-gray-800 text-white rounded-md flex items-center justify-center">=</button>
                 {/* <p>{Math.floor(Math.random() * 100)}</p> */}
                 </div>
             </div>
 
-            <div className=" bg-gray-100">
-              <div className='overflow-y-auto mt-4 h-48 bg-red-400 border border-gray-300'>
-                <ul>
-                    {
-                        reversedList.map((item, index) => (
-                        <li key={index}>{item}</li>
-                    ))}
+            <div className="w-44">
+              <div className='overflow-y-auto mt-7 h-64 w-screen flex justify-center md:justify-start md:w-44 bg-emerald-700 border border-gray-300 rounded-md shadow-md'>
+                
+                <ul className='pl-3'>
+                  {reversedList.map((item, index) => {
+                    const parts = item.split('=');
+                    const operation = parts[0]; 
+                    const result = '= ' + parts[1];    
+                    
+                    return (
+                      <li className='text-white mt-2' key={index}>
+                        <div className="flex flex-col justify-between">
+                          <span>{operation}</span>
+                          <span>{result}</span>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </div>
