@@ -235,6 +235,11 @@ const Home = () => {
     setPercentage(true);
   };
 
+  const allClear = () => {
+    clearResult()
+    setComputation([])
+  }
+
   const deleteNum = () =>{
     setResult(result => {
       if(result.length == 1){
@@ -279,7 +284,7 @@ const Home = () => {
                 <div className="text-2xsl mb-5 h-14 w-44 md:w-64 overflow-y-auto bg-slate-900 text-white flex items-center justify-center">{result}</div>
                 <div className="grid grid-cols-4 gap-2 h-64 w-44 md:w-64">
                 <button className={btnStyles.button2} onClick={handlePercentage}>%</button>  
-                <button className={btnStyles.button2} onClick={clearResult}>AC</button>
+                <button className={btnStyles.button2} onClick={allClear}>AC</button>
                 <button className={btnStyles.button2} onClick={clearResult}>C</button>  
                 <button className={btnStyles.button2} onClick={deleteNum}>DEL</button>
 
